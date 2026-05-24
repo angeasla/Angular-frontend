@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>{{ 'TOOLS.LEAVE_PAY_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.LEAVE_PAY_DIALOG.PAY_TYPE_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="employeeType">
+        <mat-option value="salary">{{ 'TOOLS.COMMON.EMPLOYEE_SALARY' | translate }}</mat-option>
+        <mat-option value="wage">{{ 'TOOLS.COMMON.EMPLOYEE_WAGE' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.COMMON.GROSS_EARNINGS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="amount" min="1">
+      <mat-icon matSuffix>euro</mat-icon>
+    </mat-form-field>
+
+    <div class="row-fields">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.COMMON.WORKWEEK_LABEL' | translate }}</mat-label>
+        <mat-select formControlName="workweek">
+          <mat-option [value]="5">{{ 'TOOLS.COMMON.WORKWEEK_5' | translate }}</mat-option>
+          <mat-option [value]="6">{{ 'TOOLS.COMMON.WORKWEEK_6' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.LEAVE_PAY_DIALOG.LEAVE_DAYS_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="leaveDays" min="1" max="30" step="1">
+      </mat-form-field>
+    </div>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="highlight-split-container">
+        <div class="result-highlight split-item">
+          <span class="result-highlight-label">{{ 'TOOLS.LEAVE_PAY_DIALOG.RESULT_LEAVE_PAY' | translate }}</span>
+          <span class="result-highlight-value">{{ results.leavePay | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="result-highlight split-item highlight-bonus">
+          <span class="result-highlight-label">{{ 'TOOLS.LEAVE_PAY_DIALOG.RESULT_LEAVE_BONUS' | translate }}</span>
+          <span class="result-highlight-value">{{ results.leaveBonus | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.LEAVE_PAY_DIALOG.PAID_DAYS' | translate }}</span>
+          <span>{{ results.paidDays }} {{ 'TOOLS.LEAVE_PAY_DIALOG.PAID_DAYS_NOTE' | translate }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.LEAVE_PAY_DIALOG.TOTAL_GROSS' | translate }}</span>
+          <span>{{ results.totalPay | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        @if (results.capHit) {
+          <div class="breakdown-row info-row">
+            <span>{{ 'TOOLS.LEAVE_PAY_DIALOG.CAP_WARNING' | translate:{ amount: (results.bonusCap | currency:'EUR':'symbol':'1.2-2') } }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

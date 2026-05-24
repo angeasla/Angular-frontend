@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>{{ 'TOOLS.DISMISSAL_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.DISMISSAL_DIALOG.TYPE_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="employeeType">
+        <mat-option value="salary">{{ 'TOOLS.COMMON.EMPLOYEE_SALARY' | translate }}</mat-option>
+        <mat-option value="wage">{{ 'TOOLS.COMMON.EMPLOYEE_WAGE' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.DISMISSAL_DIALOG.AMOUNT_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="amount" min="1">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.DISMISSAL_DIALOG.YEARS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="years" min="0">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="warningGiven">
+        <mat-option [value]="0">{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_0' | translate }}</mat-option>
+        <mat-option [value]="1">{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_1' | translate }}</mat-option>
+        <mat-option [value]="2">{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_2' | translate }}</mat-option>
+        <mat-option [value]="3">{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_3' | translate }}</mat-option>
+        <mat-option [value]="4">{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_4' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.DISMISSAL_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.finalAmount | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.DISMISSAL_DIALOG.CALC_BASIS' | translate }}</span>
+          <span>{{ results.calcSalary | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.DISMISSAL_DIALOG.MONTHS_COMP' | translate }}</span>
+          <span>{{ results.monthsComp }} {{ 'GENERAL.MONTHS' | translate }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.DISMISSAL_DIALOG.REQUIRED_WARNING' | translate }}</span>
+          <span>{{ results.requiredWarning }} {{ 'GENERAL.MONTHS' | translate }}</span>
+        </div>
+        @if (results.warningIsValid) {
+          <div class="breakdown-row info-row success-row">
+            <span>{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_VALID' | translate }}</span>
+          </div>
+        } @else {
+          <div class="breakdown-row info-row error-row">
+            <span>{{ 'TOOLS.DISMISSAL_DIALOG.WARNING_INVALID' | translate }}</span>
+          </div>
+        }
+      </div>
+
+      <p class="legal-disclaimer">{{ 'TOOLS.DISMISSAL_DIALOG.DISCLAIMER_1' | translate }}</p>
+      <p class="legal-disclaimer" style="margin-top: 8px;" [innerHTML]="'TOOLS.DISMISSAL_DIALOG.DISCLAIMER_2' | translate"></p>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

@@ -1,0 +1,88 @@
+<h2 mat-dialog-title>{{ 'TOOLS.OVERTIME_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.COMMON.EMPLOYEE_TYPE_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="employeeType">
+        <mat-option value="salary">{{ 'TOOLS.COMMON.EMPLOYEE_SALARY' | translate }}</mat-option>
+        <mat-option value="wage">{{ 'TOOLS.COMMON.EMPLOYEE_WAGE' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="row-fields">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.OVERTIME_DIALOG.AMOUNT_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="grossAmount" min="1">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.OVERTIME_DIALOG.HOURS_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="hoursPerWeek" min="1" max="40">
+      </mat-form-field>
+    </div>
+
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="isBasicSalary" color="primary">
+        {{ 'TOOLS.OVERTIME_DIALOG.IS_BASIC_SALARY' | translate }}
+      </mat-checkbox>
+    </div>
+
+    @if (!form.get('isBasicSalary')?.value) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'TOOLS.OVERTIME_DIALOG.LEGAL_BASE_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="legalBaseAmount" min="1">
+        <mat-hint>{{ 'TOOLS.OVERTIME_DIALOG.LEGAL_BASE_HINT' | translate }}</mat-hint>
+      </mat-form-field>
+    }
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.OVERTIME_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.hourlyRate | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_HOUR' | translate }}</span>
+      </div>
+
+      <div class="breakdown">
+        <h3 class="breakdown-subheader">{{ 'TOOLS.OVERTIME_DIALOG.SECTION_OVERTIME' | translate }}</h3>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.OVERWORK' | translate }}</span>
+          <span>{{ results.overworkRate | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.LEGAL_OVERTIME' | translate }}</span>
+          <span>{{ results.legalOvertime | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.ILLEGAL_OVERTIME' | translate }}</span>
+          <span>{{ results.illegalOvertime | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <h3 class="breakdown-subheader mt-3">{{ 'TOOLS.OVERTIME_DIALOG.SECTION_NIGHT' | translate }}</h3>
+        <div class="breakdown-row info-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.NIGHT_INCREMENT' | translate }}</span>
+          <span>+{{ results.nightShiftIncrement | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.TOTAL_NIGHT_RATE' | translate }}</span>
+          <span><strong>{{ results.totalNightRate | currency:'EUR':'symbol':'1.2-2' }}</strong></span>
+        </div>
+
+        <h3 class="breakdown-subheader mt-3">{{ 'TOOLS.OVERTIME_DIALOG.SECTION_6TH_DAY' | translate }}</h3>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.6TH_DAY_STANDARD' | translate }}</span>
+          <span>{{ results.sixthDayStandard | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_DAY' | translate }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.6TH_DAY_SHIFT' | translate }}</span>
+          <span>{{ results.sixthDayShift | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_DAY' | translate }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

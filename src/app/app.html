@@ -1,0 +1,216 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  @if (!isDesktop() && isSidenavVisible) {
+    <button mat-icon-button
+            [attr.aria-label]="'GENERAL.OPEN_MENU' | translate"
+            (click)="toggleSidenav()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  }
+
+  <span class="toolbar-title">{{ 'NAV.TITLE' | translate }}</span>
+
+  <span class="toolbar-spacer"></span>
+
+  @if (isDesktop()) {
+    <nav class="desktop-nav">
+      <a mat-button routerLink="">{{ 'NAV.HOME' | translate }}</a>
+      <a mat-button routerLink="/wiki">{{ 'NAV.WIKI' | translate }}</a>
+      <a mat-button routerLink="/tools">{{ 'NAV.TOOLS' | translate }}</a>
+    </nav>
+  }
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+
+  @if (isSidenavVisible) {
+    <mat-sidenav
+      position="start"
+      [mode]="sidenavMode()"
+      [opened]="sidenavOpened()"
+      (openedChange)="sidenavOpened.set($event)"
+      class="app-sidenav">
+
+      @if (!isDesktop()) {
+        <mat-nav-list class="sidenav-nav-list mobile-main-nav">
+          <a mat-list-item routerLink="/" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>home</mat-icon>
+            <span matListItemTitle>{{ 'NAV.HOME' | translate }}</span>
+          </a>
+          <a mat-list-item routerLink="/wiki" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>menu_book</mat-icon>
+            <span matListItemTitle>{{ 'NAV.WIKI' | translate }}</span>
+          </a>
+          <a mat-list-item routerLink="/tools" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>apps</mat-icon>
+            <span matListItemTitle>{{ 'NAV.TOOLS' | translate }}</span>
+          </a>
+        </mat-nav-list>
+        <mat-divider></mat-divider>
+      }
+
+      @if (activeMenu === 'tools') {
+        <div class="wiki-tree">
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>account_balance_wallet</mat-icon>
+              <span matListItemTitle>Μισθός</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('salary')">
+                <span matListItemTitle>Υπολογισμός Καθαρού / Μικτού Μισθού</span>
+              </a>
+            </mat-nav-list>
+          </div>
+
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>event</mat-icon>
+              <span matListItemTitle>Άδειες</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('leave-days')">
+                <span matListItemTitle>Υπολογισμός ημερών αδείας</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('leave-part-time')">
+                <span matListItemTitle>Ημέρες αδείας (εκ περιτροπής)</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('leave-pay')">
+                <span matListItemTitle>Αποδοχές και επίδομα αδείας</span>
+              </a>
+            </mat-nav-list>
+          </div>
+
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>work_off</mat-icon>
+              <span matListItemTitle>Αποζημιώσεις & Προσαυξήσεις</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('severance')">
+                <span matListItemTitle>Αποζημίωση Απόλυσης</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('overtime')">
+                <span matListItemTitle>Ωρομίσθιο, Νυχτερινή, Υπερωρία, 6η Ημέρα</span>
+              </a>
+            </mat-nav-list>
+          </div>
+
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>redeem</mat-icon>
+              <span matListItemTitle>Δώρο Πάσχα</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('easter-bonus')">
+                <span matListItemTitle>Υπολογισμός Δώρου Πάσχα</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('easter-part-time')">
+                <span matListItemTitle>Δώρο Πάσχα (εκ περιτροπής)</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('easter-hourly')">
+                <span matListItemTitle>Δώρο Πάσχα σε Ωρομίσθιους</span>
+              </a>
+            </mat-nav-list>
+          </div>
+
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>card_giftcard</mat-icon>
+              <span matListItemTitle>Δώρο Χριστουγέννων</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('xmas-bonus')">
+                <span matListItemTitle>Υπολογισμός Δώρου Χριστουγέννων</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('xmas-part-time')">
+                <span matListItemTitle>Δώρο Χριστουγέννων (εκ περιτροπής)</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('xmas-hourly')">
+                <span matListItemTitle>Δώρο Χριστουγέννων σε Ωρομίσθιους</span>
+              </a>
+            </mat-nav-list>
+          </div>
+
+          <div class="wiki-category-group">
+            <a mat-list-item class="wiki-category-header" style="cursor: default;">
+              <mat-icon matListItemIcon>child_care</mat-icon>
+              <span matListItemTitle>Μητρότητα & Συντάξεις</span>
+            </a>
+            <mat-nav-list class="wiki-sub-list">
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('maternity')">
+                <span matListItemTitle>Μητρότητα - Μειωμένο Ωράριο</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('national-pension')">
+                <span matListItemTitle>Υπολογισμός Εθνικής Σύνταξης</span>
+              </a>
+              <a mat-list-item class="wiki-article-item" (click)="openToolFromSidebar('contributory-pension')">
+                <span matListItemTitle>Υπολογισμός Ανταποδοτικής Σύνταξης</span>
+              </a>
+            </mat-nav-list>
+          </div>
+        </div>
+      }
+
+      @if (activeMenu === 'wiki') {
+        <mat-nav-list class="sidenav-nav-list">
+          <a mat-list-item routerLink="/wiki/./general_index.md" (click)="closeSidenavOnMobile()">
+            <mat-icon matListItemIcon>home</mat-icon>
+            <span matListItemTitle>Αρχική Οδηγού</span>
+          </a>
+        </mat-nav-list>
+
+        <div class="wiki-tree">
+          @for (cat of wikiCategories; track cat.category) {
+            @if (cat.category !== '.') {
+              <div class="wiki-category-group">
+                <a mat-list-item
+                   [routerLink]="'/wiki/' + cat.category + '/index.md'"
+                   routerLinkActive="active-category-header"
+                   class="wiki-category-header"
+                   (click)="closeSidenavOnMobile()">
+                  <mat-icon matListItemIcon>{{ cat.icon }}</mat-icon>
+                  <span matListItemTitle>{{ cat.categoryTitle }}</span>
+                </a>
+
+                <mat-nav-list class="wiki-sub-list">
+                  @for (article of cat.articles; track article.path) {
+                    @if (!article.path.endsWith('index.md') && !article.path.endsWith('general_index.md')) {
+                      <a mat-list-item
+                         [routerLink]="'/wiki/' + article.path"
+                         routerLinkActive="active-article"
+                         class="wiki-article-item"
+                         (click)="closeSidenavOnMobile()">
+                        <span matListItemTitle>{{ article.title }}</span>
+                      </a>
+                    }
+                  }
+                </mat-nav-list>
+              </div>
+            }
+          }
+        </div>
+
+        @if (wikiCategories.length === 0) {
+          <div class="wiki-empty">
+            <mat-icon>info</mat-icon>
+            <p>Δεν βρέθηκαν άρθρα.</p>
+          </div>
+        }
+      }
+
+    </mat-sidenav>
+  }
+
+  <mat-sidenav-content class="sidenav-content" [class.no-padding]="!isSidenavVisible">
+    <router-outlet />
+
+    <button mat-fab
+            color="accent"
+            class="support-fab"
+            [attr.aria-label]="'FAB.ARIA_LABEL' | translate"
+            (click)="navigateToSupport()">
+      <mat-icon>support_agent</mat-icon>
+    </button>
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

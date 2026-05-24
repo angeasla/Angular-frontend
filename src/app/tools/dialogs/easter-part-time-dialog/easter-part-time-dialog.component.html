@@ -1,0 +1,56 @@
+<h2 mat-dialog-title>{{ 'TOOLS.EASTER_PART_TIME_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.COMMON.EMPLOYEE_TYPE_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="employeeType">
+        <mat-option value="salary">{{ 'TOOLS.COMMON.EMPLOYEE_SALARY' | translate }}</mat-option>
+        <mat-option value="wage">{{ 'TOOLS.COMMON.EMPLOYEE_WAGE' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.COMMON.GROSS_EARNINGS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="amount" min="1">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.EASTER_PART_TIME_DIALOG.DAYS_WORKED_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="daysWorked" min="1" max="120">
+      <mat-hint>{{ 'TOOLS.EASTER_PART_TIME_DIALOG.DAYS_WORKED_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.EASTER_PART_TIME_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.finalBonus | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.COMMON.DAILY_WAGE_BASIS' | translate }}</span>
+          <span>{{ results.dailyWage | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.COMMON.BONUS_DAYS_RATIO' | translate }}</span>
+          <span>{{ results.bonusDaysRatio }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.COMMON.BASE_BONUS' | translate }}</span>
+          <span>{{ results.baseBonus | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.COMMON.LEAVE_INCREMENT' | translate }}</span>
+          <span>+{{ results.increment | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

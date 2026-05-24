@@ -1,0 +1,173 @@
+// Toolbar
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.toolbar-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.desktop-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.menu-arrow {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-left: -4px;
+}
+
+// Sidenav container fills remaining viewport height (mobile-first)
+.sidenav-container {
+  height: calc(100vh - 56px);
+}
+
+@media (min-width: 768px) {
+  .sidenav-container {
+    height: calc(100vh - 64px);
+  }
+}
+
+// Sidenav panel
+mat-sidenav {
+  width: 280px;
+}
+
+// Sidenav text wrap fix
+.sidenav-nav-list {
+  ::ng-deep .mat-mdc-list-item-title,
+  ::ng-deep .mdc-list-item__primary-text {
+    white-space: normal !important;
+    line-height: 1.3 !important;
+    padding-bottom: 4px;
+  }
+
+  [matSubheader] {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Content area
+.sidenav-content {
+  padding: 16px;
+  overflow-y: auto;
+
+  &.no-padding {
+    padding: 0;
+  }
+}
+
+// Floating Action Button
+.support-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+}
+
+/* Mobile Main Navigation Styling */
+.mobile-main-nav {
+  background-color: rgba(0, 0, 0, 0.02);
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+
+  ::ng-deep .mat-mdc-list-item-title {
+    font-weight: 500 !important;
+  }
+}
+
+
+// Active category header highlight
+.active-category-header {
+  background-color: rgba(220, 38, 38, 0.05) !important;
+  border-left: 4px solid #dc2626 !important;
+}
+
+/* Wiki Static Tree UI */
+.wiki-tree {
+  margin-top: 16px;
+}
+
+.wiki-category-group {
+  margin-bottom: 8px;
+}
+
+/* Category Header: Larger, bolder font */
+.wiki-category-header {
+  ::ng-deep .mat-mdc-list-item-title {
+    font-size: 1.05rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.2px;
+  }
+}
+
+/* Sub-list: Indented under the category with a visual tree line */
+.wiki-sub-list {
+  margin-left: 36px !important;
+  border-left: 2px solid rgba(0, 0, 0, 0.06);
+  padding-top: 4px !important;
+  padding-bottom: 8px !important;
+}
+
+/* Article Items: Fix cramped multiline text */
+.wiki-article-item {
+  height: auto !important;
+  min-height: 40px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+
+  ::ng-deep .mat-mdc-list-item-title {
+    white-space: normal !important;
+    line-height: 1.4 !important;
+    font-size: 0.95rem !important;
+    color: #4a4a4a;
+  }
+
+  &.active-article {
+    border-left: 3px solid #dc2626;
+    margin-left: -2px; /* Pull left to cover the gray tree line */
+    background-color: rgba(0, 0, 0, 0.03);
+
+    ::ng-deep .mat-mdc-list-item-title {
+      color: #000;
+      font-weight: 500 !important;
+    }
+  }
+}
+
+.wiki-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  color: #9ca3af;
+  text-align: center;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+}
+
+// AI Chat Dialog - rounded corners for the entire popup
+::ng-deep .chat-dialog-panel .mdc-dialog__surface {
+  border-radius: 12px !important;
+  overflow: hidden;
+}

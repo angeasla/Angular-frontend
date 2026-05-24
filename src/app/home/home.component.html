@@ -1,0 +1,50 @@
+<!-- Expansive Hero Section -->
+<section class="expansive-hero">
+  <div class="expansive-hero-overlay"></div>
+  <div class="hero-content-wrapper">
+    <h1 class="hero-title">{{ 'HOME.HERO.EXPANSIVE_TITLE' | translate }}</h1>
+    <p class="hero-subtitle">{{ 'HOME.HERO.EXPANSIVE_SUBTITLE' | translate }}</p>
+
+    <div class="hero-actions">
+      <a mat-flat-button class="cta-primary" routerLink="/wiki">
+        {{ 'HOME.HERO.CTA_PRIMARY' | translate }}
+      </a>
+      <a mat-stroked-button class="cta-secondary" routerLink="/tools">
+        {{ 'HOME.HERO.CTA_SECONDARY' | translate }}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Features Grid -->
+<section class="features">
+  <mat-card class="feature-card feature-card--clickable" (click)="openAiChat()">
+    <mat-card-header>
+      <mat-icon class="feature-icon">smart_toy</mat-icon>
+      <mat-card-title>{{ 'HOME.FEATURES.AI_TITLE' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ 'HOME.FEATURES.AI_DESC' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="feature-card feature-card--clickable" (click)="goToWiki()">
+    <mat-card-header>
+      <mat-icon class="feature-icon">menu_book</mat-icon>
+      <mat-card-title>{{ 'HOME.FEATURES.WIKI_TITLE' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ 'HOME.FEATURES.WIKI_DESC' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="feature-card feature-card--clickable" routerLink="/tools">
+    <mat-card-header>
+      <mat-icon class="feature-icon">calculate</mat-icon>
+      <mat-card-title>{{ 'HOME.FEATURES.TOOLS_TITLE' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ 'HOME.FEATURES.TOOLS_DESC' | translate }}</p>
+    </mat-card-content>
+  </mat-card>
+</section>

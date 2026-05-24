@@ -1,0 +1,73 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Custom palettes
+$primary-palette: mat.m2-define-palette(mat.$m2-gray-palette, 900, 800, 700);
+$accent-palette: mat.m2-define-palette(mat.$m2-red-palette, 700, 600, 800);
+
+// Typography config
+$typography-config: mat.m2-define-typography-config(
+  $font-family: "'Roboto', sans-serif"
+);
+
+// Light theme
+$app-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+  ),
+  typography: $typography-config,
+  density: 0,
+));
+
+// Apply theme to all Material components
+@include mat.all-component-themes($app-theme);
+
+// Global base styles
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f9fafb;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 400;
+}
+
+// Mobile-first: sidenav container height
+.sidenav-container {
+  height: calc(100vh - 56px);
+}
+
+@media (min-width: 768px) {
+  .sidenav-container {
+    height: calc(100vh - 64px);
+  }
+}
+
+/* Prevent tables from breaking mobile viewports */
+.wiki-content table {
+  display: block !important;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure images scale down */
+.wiki-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make sure modal dialogs (Calculators) are responsive */
+.cdk-overlay-pane {
+  max-width: 95vw !important;
+}

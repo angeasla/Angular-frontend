@@ -1,0 +1,90 @@
+.salary-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding-top: 1rem;
+}
+
+.mode-toggle {
+  width: 100%;
+  margin-bottom: 16px;
+
+  ::ng-deep .mat-button-toggle {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.results-section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 20px;
+}
+
+.result-highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: rgba(220, 38, 38, 0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.result-highlight-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.result-highlight-value {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 400px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.result-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.result-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.result-value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1f2937;
+}

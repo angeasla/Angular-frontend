@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>{{ 'TOOLS.EASTER_HOURLY_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <div class="row-fields">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.EASTER_HOURLY_DIALOG.TOTAL_EARNINGS_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="totalEarnings" min="1">
+        <mat-hint>{{ 'TOOLS.EASTER_HOURLY_DIALOG.TOTAL_EARNINGS_HINT' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.EASTER_HOURLY_DIALOG.DAYS_WORKED_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="daysWorked" min="1">
+        <mat-hint>{{ 'TOOLS.EASTER_HOURLY_DIALOG.DAYS_WORKED_HINT' | translate }}</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <div class="row-fields mt-2">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.EASTER_HOURLY_DIALOG.START_LABEL' | translate }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" formControlName="startDate" [min]="minDate" [max]="maxDate">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.EASTER_HOURLY_DIALOG.END_LABEL' | translate }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" formControlName="endDate" [min]="minDate" [max]="maxDate">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.EASTER_HOURLY_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.finalBonus | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.EASTER_HOURLY_DIALOG.AVERAGE_WAGE' | translate }}</span>
+          <span>{{ results.averageWage | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.EASTER_HOURLY_DIALOG.RATIO_LABEL' | translate:{ days: results.calendarDays } }}</span>
+          <span>{{ results.ratio }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.COMMON.BASE_BONUS' | translate }}</span>
+          <span>{{ results.baseBonus | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.COMMON.LEAVE_INCREMENT' | translate }}</span>
+          <span>+{{ results.increment | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

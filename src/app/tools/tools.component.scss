@@ -1,0 +1,87 @@
+.tools-hub {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 16px;
+
+  @media (min-width: 768px) {
+    padding: 48px 24px;
+  }
+}
+
+.page-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.page-subtitle {
+  color: #6b7280;
+  font-size: 1.05rem;
+  margin-bottom: 40px;
+}
+
+.category-section {
+  margin-bottom: 48px;
+}
+
+.category-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  font-size: 1.4rem;
+  color: #1f2937;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+// ─── Square-like App Grid ────────────────────────────────────────────────────
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.tool-card {
+  cursor: pointer;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.15);
+    background-color: rgba(220, 38, 38, 0.04);
+    border-color: rgba(220, 38, 38, 0.3);
+  }
+}
+
+.tool-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px 12px;
+  gap: 12px;
+  height: 100%;
+}
+
+.tool-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #dc2626;
+}
+
+.tool-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  line-height: 1.3;
+}

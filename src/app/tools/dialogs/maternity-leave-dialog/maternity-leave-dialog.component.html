@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{ 'TOOLS.MATERNITY_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.MATERNITY_DIALOG.RETURN_DATE_LABEL' | translate }}</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+      <mat-hint>{{ 'TOOLS.MATERNITY_DIALOG.RETURN_DATE_HINT' | translate }}</mat-hint>
+    </mat-form-field>
+
+    <div class="row-fields mt-2">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.COMMON.WORKWEEK_LABEL' | translate }}</mat-label>
+        <mat-select formControlName="workweek">
+          <mat-option [value]="5">{{ 'TOOLS.COMMON.WORKWEEK_5' | translate }}</mat-option>
+          <mat-option [value]="6">{{ 'TOOLS.COMMON.WORKWEEK_6' | translate }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>{{ 'TOOLS.MATERNITY_DIALOG.ANNUAL_LEAVE_LABEL' | translate }}</mat-label>
+        <input matInput type="number" formControlName="annualLeaveDays" min="20" max="30">
+        <mat-hint>{{ 'TOOLS.MATERNITY_DIALOG.ANNUAL_LEAVE_HINT' | translate }}</mat-hint>
+      </mat-form-field>
+    </div>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.MATERNITY_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.continuousDays }} {{ 'GENERAL.DAYS' | translate }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.MATERNITY_DIALOG.PERIOD_30_MONTHS' | translate }}</span>
+          <span>{{ 'TOOLS.MATERNITY_DIALOG.ENDS_LABEL' | translate }} {{ results.endDate | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.MATERNITY_DIALOG.WORKING_DAYS' | translate }}</span>
+          <span>{{ results.workingDaysCount }} {{ 'GENERAL.DAYS' | translate }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.MATERNITY_DIALOG.LEAVE_DEDUCTION' | translate }}</span>
+          <span>-{{ results.expectedLeaveDays }} {{ 'GENERAL.DAYS' | translate }}</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.MATERNITY_DIALOG.TOTAL_HOURS' | translate }}</span>
+          <span>{{ results.totalHoursOwed }} {{ 'GENERAL.HOURS' | translate }}</span>
+        </div>
+        <div class="breakdown-row info-row">
+          <span [innerHTML]="'TOOLS.MATERNITY_DIALOG.SUMMARY' | translate:{ months: results.continuousMonths }"></span>
+        </div>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

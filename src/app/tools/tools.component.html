@@ -1,0 +1,21 @@
+<div class="tools-hub">
+  <h1 class="page-title">Εργαλεία Υπολογισμού</h1>
+  <p class="page-subtitle">Επίλεξε ένα εργαλείο για να υπολογίσεις μισθούς, αποζημιώσεις, δώρα και πολλά ακόμα.</p>
+
+  @for (category of toolCategories; track category.title) {
+    <section class="category-section">
+      <h2 class="category-title">{{ category.title }}</h2>
+
+      <div class="tools-grid">
+        @for (tool of category.tools; track tool.componentKey) {
+          <mat-card class="tool-card" (click)="openTool(tool.componentKey)">
+            <div class="tool-card-content">
+              <mat-icon class="tool-icon">{{ tool.icon }}</mat-icon>
+              <span class="tool-name">{{ tool.name }}</span>
+            </div>
+          </mat-card>
+        }
+      </div>
+    </section>
+  }
+</div>

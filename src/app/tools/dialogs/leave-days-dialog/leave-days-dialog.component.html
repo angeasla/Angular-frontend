@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>{{ 'TOOLS.LEAVE_DAYS_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.LEAVE_DAYS_DIALOG.WORKWEEK_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="workweek">
+        <mat-option [value]="5">{{ 'TOOLS.COMMON.WORKWEEK_5_FULL' | translate }}</mat-option>
+        <mat-option [value]="6">{{ 'TOOLS.COMMON.WORKWEEK_6_FULL' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.LEAVE_DAYS_DIALOG.HIRE_DATE_LABEL' | translate }}</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="hireDate" [max]="today">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.LEAVE_DAYS_DIALOG.TOTAL_YEARS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="totalYears" min="0">
+    </mat-form-field>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.LEAVE_DAYS_DIALOG.RESULT_LABEL' | translate }}</span>
+        <span class="result-highlight-value">{{ results.days }} {{ 'GENERAL.DAYS' | translate }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.LEAVE_DAYS_DIALOG.TENURE_LABEL' | translate }}</span>
+          <span>{{ results.tenureDisplay }}</span>
+        </div>
+        <div class="breakdown-row info-row border-bottom">
+          <span>{{ results.detail }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

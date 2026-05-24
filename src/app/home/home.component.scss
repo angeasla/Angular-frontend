@@ -1,0 +1,185 @@
+// ─── Expansive Hero ───────────────────────────────────────────────────────────
+.expansive-hero {
+  position: relative;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  // Dramatic multi-layer background blend
+  background:
+    // Layer 1: Abstract geometric pattern (simulated with repeating gradient)
+    repeating-linear-gradient(
+      135deg,
+      rgba(220, 38, 38, 0.08) 0px,
+      rgba(220, 38, 38, 0.08) 2px,
+      transparent 2px,
+      transparent 40px
+    ),
+    // Layer 2: Radial accent glow
+    radial-gradient(
+      ellipse at 70% 20%,
+      rgba(220, 38, 38, 0.35) 0%,
+      transparent 60%
+    ),
+    // Layer 3: Primary gradient sweep
+    linear-gradient(
+      160deg,
+      #1f2937 0%,
+      #111827 40%,
+      #1f2937 70%,
+      #dc2626 150%
+    );
+  background-blend-mode: overlay, color-burn, normal;
+
+  @media (min-width: 768px) {
+    min-height: 600px;
+  }
+}
+
+.expansive-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    // Subtle noise texture simulation
+    repeating-conic-gradient(
+      rgba(255, 255, 255, 0.01) 0%,
+      transparent 0.5%
+    ),
+    // Vignette
+    radial-gradient(
+      ellipse at center,
+      transparent 40%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  pointer-events: none;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 48px 24px;
+  max-width: 760px;
+}
+
+.hero-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 2.2rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  line-height: 1.2;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+
+  @media (min-width: 768px) {
+    font-size: 3.5rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 36px;
+  line-height: 1.7;
+
+  @media (min-width: 768px) {
+    font-size: 1.25rem;
+  }
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cta-primary {
+  background-color: #dc2626 !important;
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 0 28px;
+  height: 44px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+  }
+}
+
+.cta-secondary {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  padding: 0 28px;
+  height: 44px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+// ─── Features Grid ───────────────────────────────────────────────────────────
+.features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  padding: 48px 24px;
+  max-width: 1080px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+    padding: 64px 24px;
+  }
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 28px rgba(220, 38, 38, 0.15);
+    }
+  }
+
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  mat-card-content p {
+    color: #4b5563;
+    line-height: 1.6;
+  }
+}
+
+.feature-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  color: #dc2626;
+}

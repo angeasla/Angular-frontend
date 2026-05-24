@@ -1,0 +1,97 @@
+<h2 mat-dialog-title>{{ 'TOOLS.SALARY_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="salary-form">
+    <!-- Mode Toggle -->
+    <mat-button-toggle-group formControlName="calculationMode" class="mode-toggle">
+      <mat-button-toggle value="grossToNet">
+        {{ 'TOOLS.SALARY_DIALOG.MODE_GROSS_TO_NET' | translate }}
+      </mat-button-toggle>
+      <mat-button-toggle value="netToGross">
+        {{ 'TOOLS.SALARY_DIALOG.MODE_NET_TO_GROSS' | translate }}
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>
+        @if (isGrossToNet) {
+          {{ 'TOOLS.SALARY_DIALOG.GROSS_LABEL' | translate }}
+        } @else {
+          {{ 'TOOLS.SALARY_DIALOG.NET_LABEL' | translate }}
+        }
+      </mat-label>
+      <input matInput type="number" formControlName="salaryInput" min="0">
+      <mat-icon matSuffix>euro</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.SALARY_DIALOG.CHILDREN_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="children">
+        <mat-option [value]="0">0</mat-option>
+        <mat-option [value]="1">1</mat-option>
+        <mat-option [value]="2">2</mat-option>
+        <mat-option [value]="3">3+</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="use14months" color="primary">
+        {{ 'TOOLS.SALARY_DIALOG.INCLUDE_BONUSES' | translate }}
+      </mat-checkbox>
+      <mat-checkbox formControlName="hasDisability" color="primary">
+        {{ 'TOOLS.SALARY_DIALOG.HAS_DISABILITY' | translate }}
+      </mat-checkbox>
+    </div>
+  </form>
+
+  <!-- Results -->
+  <div class="results-section">
+    <div class="result-highlight">
+      <span class="result-highlight-label">
+        @if (isGrossToNet) {
+          {{ 'TOOLS.SALARY_DIALOG.NET_SALARY' | translate }}
+        } @else {
+          {{ 'TOOLS.SALARY_DIALOG.GROSS_SALARY' | translate }}
+        }
+      </span>
+      <span class="result-highlight-value">
+        @if (isGrossToNet) {
+          {{ results.monthlyNet | currency:'EUR':'symbol':'1.2-2' }}
+        } @else {
+          {{ results.monthlyGross | currency:'EUR':'symbol':'1.2-2' }}
+        }
+      </span>
+    </div>
+
+    <div class="results-grid">
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.GROSS_SALARY' | translate }}</span>
+        <span class="result-value">{{ results.monthlyGross | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.NET_SALARY' | translate }}</span>
+        <span class="result-value">{{ results.monthlyNet | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.EFKA_EMPLOYEE' | translate }}</span>
+        <span class="result-value">{{ results.efkaEmployee | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.MONTHLY_TAX' | translate }}</span>
+        <span class="result-value">{{ results.monthlyTax | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.EFKA_EMPLOYER' | translate }}</span>
+        <span class="result-value">{{ results.efkaEmployer | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">{{ 'TOOLS.SALARY_DIALOG.TOTAL_COST' | translate }}</span>
+        <span class="result-value">{{ results.totalEmployerCost | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>
