@@ -169,3 +169,27 @@
     }
   }
 }
+
+/* --- Στυλ για το Soft Trigger (Κουμπί Εργαλείου) --- */
+.tool-suggestion {
+  margin-top: 16px;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+
+  .suggestion-divider {
+    height: 1px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+  }
+
+  .suggestion-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    font-weight: 500;
+  }
+}

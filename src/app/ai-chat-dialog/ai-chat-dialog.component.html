@@ -22,11 +22,24 @@
         <div class="message-bubble"
              [class.user-bubble]="msg.role === 'user'"
              [class.ai-bubble]="msg.role === 'ai'">
+             
           @if (msg.role === 'ai') {
             <markdown [data]="msg.content"></markdown>
-          } @else {
+            
+            @if (msg.suggestedToolKey) {
+              <div class="tool-suggestion">
+                <div class="suggestion-divider"></div>
+                <p class="suggestion-text">Θέλεις να υπολογίσεις ακριβή ποσά;</p>
+                <button mat-stroked-button color="accent" (click)="openTool(msg.suggestedToolKey)">
+                  <mat-icon>calculate</mat-icon>
+                  {{ msg.suggestedToolName }}
+                </button>
+              </div>
+            }
+            } @else {
             {{ msg.content }}
           }
+          
         </div>
       </div>
     }
