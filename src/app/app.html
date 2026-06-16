@@ -9,6 +9,8 @@
 
   <span class="toolbar-title">{{ 'NAV.TITLE' | translate }}</span>
 
+  <app-search class="toolbar-search"></app-search>
+
   <span class="toolbar-spacer"></span>
 
   @if (isDesktop()) {
@@ -153,7 +155,7 @@
 
       @if (activeMenu === 'wiki') {
         <mat-nav-list class="sidenav-nav-list">
-          <a mat-list-item routerLink="/wiki/./general_index.md" (click)="closeSidenavOnMobile()">
+          <a mat-list-item routerLink="/wiki/./index.md" (click)="closeSidenavOnMobile()">
             <mat-icon matListItemIcon>home</mat-icon>
             <span matListItemTitle>Αρχική Οδηγού</span>
           </a>

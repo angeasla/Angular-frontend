@@ -17,6 +17,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LayoutService } from './services/layout.service';
 import { WikiService, WikiCategory } from './services/wiki.service';
 import { AiChatDialogComponent } from './ai-chat-dialog/ai-chat-dialog.component';
+import { SearchComponent } from './search/search.component';
 
 @Component({
   selector: 'app-root',
@@ -35,6 +36,7 @@ import { AiChatDialogComponent } from './ai-chat-dialog/ai-chat-dialog.component
     MatDividerModule,
     TranslateModule,
     MatDialogModule,
+    SearchComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
