@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalculatorService } from '../../../services/calculator.service';
+import { inclusiveDays } from '../../../services/date-utils';
 
 interface EasterBonusResults {
   calendarDays: number;
@@ -52,11 +54,10 @@ export class EasterBonusDialogComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private calc: CalculatorService) {
     const currentYear = new Date().getFullYear();
-    // Easter bonus period is strictly Jan 1 to Apr 30
-    this.minDate = new Date(currentYear, 0, 1);  // Jan 1
-    this.maxDate = new Date(currentYear, 3, 30); // Apr 30
+    this.minDate = new Date(currentYear, 0, 1);   // Jan 1
+    this.maxDate = new Date(currentYear, 3, 30);  // Apr 30
 
     this.form = this.fb.group({
       employeeType: ['salary', Validators.required],
@@ -67,11 +68,11 @@ export class EasterBonusDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.calculate();
+    this.triggerCalculation();
 
     this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.calculate());
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => this.triggerCalculation());
   }
 
   ngOnDestroy(): void {
@@ -79,7 +80,7 @@ export class EasterBonusDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private calculate(): void {
+  private triggerCalculation(): void {
     const vals = this.form.value;
     const amount = parseFloat(vals.amount) || 0;
     const isSalary = vals.employeeType === 'salary';
@@ -88,29 +89,23 @@ export class EasterBonusDialogComponent implements OnInit, OnDestroy {
 
     if (amount <= 0 || !start || !end || start > end) { this.results = null; return; }
 
-    // Calculate inclusive calendar days between dates
-    const timeDiff = end.getTime() - start.getTime();
-    const calendarDays = Math.round(timeDiff / (1000 * 3600 * 24)) + 1;
+    const calendarDays = inclusiveDays(start, end);
+    const maxPossibleDays = inclusiveDays(this.minDate, this.maxDate);
+    // Easter full-bonus threshold: 120 calendar days of the period
+    const isFullBonus = calendarDays >= 120;
 
-    // Legal Ratio: For every 8 days, 1 wage OR 1/15 of half salary (which is salary/30)
-    const ratio = calendarDays / 8;
-    const baseUnit = isSalary ? (amount / 30) : amount;
-    const baseBonus = ratio * baseUnit;
+    const call$ = isSalary
+      ? this.calc.easterBonus({ monthlySalary: amount, workedDays: calendarDays })
+      : this.calc.easterPartTime({ dailyWage: amount, workedDays: calendarDays });
 
-    // Holiday Bonus Increment (Leave Allowance 0.04166)
-    const increment = baseBonus * 0.04166;
-    const finalBonus = baseBonus + increment;
-
-    // Check if max possible (employed for the whole period)
-    const maxPossibleDays = Math.round((this.maxDate.getTime() - this.minDate.getTime()) / (1000 * 3600 * 24)) + 1;
-    const isFullBonus = calendarDays === maxPossibleDays;
-
-    this.results = {
-      calendarDays,
-      baseBonus,
-      increment,
-      finalBonus,
-      isFullBonus,
-    };
+    call$.pipe(takeUntil(this.destroy$)).subscribe(r => {
+      this.results = {
+        calendarDays,
+        baseBonus: r.base,
+        increment: r.amount - r.base,
+        finalBonus: r.amount,
+        isFullBonus,
+      };
+    });
   }
 }
