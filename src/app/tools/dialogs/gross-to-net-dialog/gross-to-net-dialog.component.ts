@@ -62,6 +62,7 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
       calculationMode: ['grossToNet'],
       salaryInput: [880, Validators.required],
       children: [0, Validators.required],
+      age: [40],
       use14months: [true],
       hasDisability: [false],
     });
@@ -92,6 +93,7 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
     const children = parseInt(vals.children) || 0;
     const months = vals.use14months ? 14 : 12;
     const disability: boolean = !!vals.hasDisability;
+    const age = parseInt(vals.age) || 40;
 
     if (amount <= 0) {
       this.results = {
@@ -106,15 +108,15 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
     }
 
     if (vals.calculationMode === 'grossToNet') {
-      this.calc.grossToNet({ gross: amount, children, months, disability })
+      this.calc.grossToNet({ gross: amount, children, months, disability, age })
         .pipe(takeUntil(this.destroy$))
         .subscribe(r => this.mapGrossToNetResult(amount, r));
     } else {
       // net-to-gross: first resolve the gross, then get the full breakdown
-      this.calc.netToGross({ net: amount, children, months, disability })
+      this.calc.netToGross({ net: amount, children, months, disability, age })
         .pipe(
           switchMap(grossResult =>
-            this.calc.grossToNet({ gross: grossResult.gross, children, months, disability })
+            this.calc.grossToNet({ gross: grossResult.gross, children, months, disability, age })
               .pipe(
                 // carry grossResult along for monthlyGross
                 takeUntil(this.destroy$),

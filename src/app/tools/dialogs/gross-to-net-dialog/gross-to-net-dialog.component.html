@@ -34,6 +34,15 @@
       </mat-select>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.SALARY_DIALOG.AGE_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="age">
+        <mat-option [value]="40">{{ 'TOOLS.SALARY_DIALOG.AGE_OVER_30' | translate }}</mat-option>
+        <mat-option [value]="25">{{ 'TOOLS.SALARY_DIALOG.AGE_UNDER_26' | translate }}</mat-option>
+        <mat-option [value]="30">{{ 'TOOLS.SALARY_DIALOG.AGE_26_30' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <div class="checkbox-group">
       <mat-checkbox formControlName="use14months" color="primary">
         {{ 'TOOLS.SALARY_DIALOG.INCLUDE_BONUSES' | translate }}

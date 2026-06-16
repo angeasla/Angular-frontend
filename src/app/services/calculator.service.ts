@@ -42,10 +42,10 @@ export class CalculatorService {
     return this.http.post<T>(`${this.base}/${path}`, body);
   }
 
-  grossToNet(b: { gross: number; children: number; months: number; disability: boolean }) {
+  grossToNet(b: { gross: number; children: number; months: number; disability: boolean; age: number }) {
     return this.post<GrossToNetResult>('gross-to-net', b);
   }
-  netToGross(b: { net: number; children: number; months: number; disability: boolean }) {
+  netToGross(b: { net: number; children: number; months: number; disability: boolean; age: number }) {
     return this.post<GrossResult>('net-to-gross', b);
   }
   leaveDays(b: { workWeek: number; tenureMonths: number; totalCareerYears: number }) {
