@@ -1,0 +1,63 @@
+<h2 mat-dialog-title>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.HIRE_DATE_LABEL' | translate }}</mat-label>
+      <input matInput [matDatepicker]="hirePicker" formControlName="hireDate">
+      <mat-datepicker-toggle matSuffix [for]="hirePicker"></mat-datepicker-toggle>
+      <mat-datepicker #hirePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_LABEL' | translate }}</mat-label>
+      <mat-select formControlName="regime">
+        <mat-option value="NEW">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_NEW' | translate }}</mat-option>
+        <mat-option value="OLD">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_OLD' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.SALARY_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="monthlySalary" min="1">
+    </mat-form-field>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.RESULT_UNIT' | translate }}</span>
+        <span class="result-highlight-value">{{ results.amount | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      <div class="breakdown">
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.TENURE' | translate }}</span>
+          <span>{{ results.years }} χρόνια {{ results.months }} μήνες</span>
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.TIER' | translate }}</span>
+          <span>{{ results.multiplierMonths }} × μισθός</span>
+        </div>
+        <div class="breakdown-row border-bottom">
+          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR' | translate }}</span>
+          @if (results.retirementFactor === 1) {
+            <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR_100' | translate }}</span>
+          } @else {
+            <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR_50' | translate }}</span>
+          }
+        </div>
+        <div class="breakdown-row">
+          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FINAL' | translate }}</span>
+          <span>{{ results.amount | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <p class="legal-disclaimer">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.DISCLAIMER' | translate }}</p>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>

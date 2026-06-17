@@ -22,6 +22,8 @@ import { ChristmasHourlyDialogComponent } from './dialogs/christmas-hourly-dialo
 import { MaternityLeaveDialogComponent } from './dialogs/maternity-leave-dialog/maternity-leave-dialog.component';
 import { NationalPensionDialogComponent } from './dialogs/national-pension-dialog/national-pension-dialog.component';
 import { ContributoryPensionDialogComponent } from './dialogs/contributory-pension-dialog/contributory-pension-dialog.component';
+import { UnemploymentDialogComponent } from './dialogs/unemployment-dialog/unemployment-dialog.component';
+import { RetirementSeveranceDialogComponent } from './dialogs/retirement-severance-dialog/retirement-severance-dialog.component';
 
 @Component({
   selector: 'app-tools',
@@ -81,6 +83,13 @@ export class ToolsComponent implements OnInit, OnDestroy {
         { name: 'Μητρότητα - Μειωμένο Ωράριο', icon: 'child_care', componentKey: 'maternity' },
         { name: 'Υπολογισμός Εθνικής Σύνταξης', icon: 'account_balance', componentKey: 'national-pension' },
         { name: 'Υπολογισμός Ανταποδοτικής Σύνταξης', icon: 'timeline', componentKey: 'contributory-pension' },
+        { name: 'Αποζημίωση Συνταξιοδότησης', icon: 'elderly', componentKey: 'retirement-severance' },
+      ],
+    },
+    {
+      title: 'Ανεργία',
+      tools: [
+        { name: 'Υπολογισμός Επιδόματος Ανεργίας', icon: 'work_history', componentKey: 'unemployment' },
       ],
     },
   ];
@@ -132,6 +141,8 @@ export class ToolsComponent implements OnInit, OnDestroy {
     'maternity': { component: MaternityLeaveDialogComponent },
     'national-pension': { component: NationalPensionDialogComponent },
     'contributory-pension': { component: ContributoryPensionDialogComponent },
+    'unemployment': { component: UnemploymentDialogComponent },
+    'retirement-severance': { component: RetirementSeveranceDialogComponent },
   };
 
   openTool(key: string): void {

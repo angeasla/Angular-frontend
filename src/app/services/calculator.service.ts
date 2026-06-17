@@ -24,9 +24,19 @@ export interface BonusResult { amount: number; base: number; units: number; }
 export interface MaternityResult { workingDays: number; hoursOwed: number; continuousDays: number; continuousMonths: number; windowEnd: string; }
 export interface NationalPensionResult { monthlyAmount: number; reduced: boolean; }
 export interface ContributoryPensionResult { monthlyAmount: number; replacementRatePct: number; }
+export interface UnemploymentResult {
+  monthlyBenefit: number; durationMonths: number; avgDailyWage: number; dailyBenefit: number;
+  uncappedMonthly: number; totalPayout: number; eligible: boolean; boundApplied: BoundApplied;
+}
+export interface RetirementSeveranceResult {
+  amount: number; multiplierMonths: number; monthlySalary: number; totalMonths: number;
+  years: number; months: number; retirementFactor: number; regime: RetirementRegime;
+}
 
 export type PayType = 'SALARY' | 'DAILY_WAGE';
 export type OvertimeType = 'OVERWORK' | 'LEGAL' | 'ILLEGAL';
+export type BoundApplied = 'FLOOR' | 'CAP' | 'SALARY';
+export type RetirementRegime = 'OLD' | 'NEW';
 
 /**
  * Calls the backend calculator REST API (/api/calc/*). This is the single source of truth for all
@@ -95,5 +105,11 @@ export class CalculatorService {
   }
   contributoryPension(b: { pensionableEarnings: number; insuranceYears: number }) {
     return this.post<ContributoryPensionResult>('contributory-pension', b);
+  }
+  unemployment(b: { avgMonthlySalary: number; insuredDays: number }) {
+    return this.post<UnemploymentResult>('unemployment', b);
+  }
+  retirementSeverance(b: { monthlySalary: number; hireDate: string; regime: RetirementRegime }) {
+    return this.post<RetirementSeveranceResult>('retirement-severance', b);
   }
 }

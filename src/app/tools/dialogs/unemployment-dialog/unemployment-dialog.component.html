@@ -1,0 +1,66 @@
+<h2 mat-dialog-title>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.TITLE' | translate }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="tool-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.SALARY_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="avgMonthlySalary" min="1">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.INSURED_DAYS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="insuredDays" min="0">
+    </mat-form-field>
+  </form>
+
+  @if (results) {
+    <div class="results-section">
+      <div class="result-highlight">
+        <span class="result-highlight-label">{{ 'TOOLS.UNEMPLOYMENT_DIALOG.RESULT_UNIT' | translate }}</span>
+        <span class="result-highlight-value">{{ results.monthlyBenefit | currency:'EUR':'symbol':'1.2-2' }}</span>
+      </div>
+
+      @if (results.eligible) {
+        <div class="breakdown">
+          <div class="breakdown-row border-bottom">
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DURATION_SUFFIX' | translate }}</span>
+            <span>{{ results.durationMonths }} {{ 'GENERAL.MONTHS' | translate }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.AVG_DAILY' | translate }}</span>
+            <span>{{ results.avgDailyWage | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DAILY_BENEFIT' | translate }}</span>
+            <span>{{ results.dailyBenefit | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.MONTHLY_UNCAPPED' | translate }}</span>
+            <span>{{ results.uncappedMonthly | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row">
+            <span>{{ boundLabelKey() | translate }}</span>
+            <span>{{ results.monthlyBenefit | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="breakdown-row border-bottom">
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.TOTAL_PAYOUT' | translate }}</span>
+            <span>{{ results.totalPayout | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+      }
+
+      @if (results && !results.eligible) {
+        <div class="breakdown-row info-row error-row">
+          <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.INELIGIBLE' | translate }}</span>
+        </div>
+      }
+
+      <p class="legal-disclaimer">{{ 'TOOLS.UNEMPLOYMENT_DIALOG.WARNING_60_DAYS' | translate }}</p>
+      <p class="legal-disclaimer" style="margin-top: 8px;">{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DISCLAIMER' | translate }}</p>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'GENERAL.CLOSE' | translate }}</button>
+</mat-dialog-actions>
