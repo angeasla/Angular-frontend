@@ -176,7 +176,7 @@
 
                 <mat-nav-list class="wiki-sub-list">
                   @for (article of cat.articles; track article.path) {
-                    @if (!article.path.endsWith('index.md') && !article.path.endsWith('general_index.md')) {
+                    @if (!article.path.endsWith('index.md')) {
                       <a mat-list-item
                          [routerLink]="'/wiki/' + article.path"
                          routerLinkActive="active-article"
