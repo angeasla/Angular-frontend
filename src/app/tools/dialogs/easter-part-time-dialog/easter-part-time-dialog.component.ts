@@ -2,13 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalculatorService } from '../../../services/calculator.service';
 
 interface EasterPartTimeResults {
   dailyWage: number;
@@ -41,7 +42,7 @@ export class EasterPartTimeDialogComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private calc: CalculatorService) {
     this.form = this.fb.group({
       employeeType: ['salary', Validators.required],
       amount: [600, [Validators.required, Validators.min(1)]],
@@ -50,11 +51,11 @@ export class EasterPartTimeDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.calculate();
+    this.triggerCalculation();
 
     this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.calculate());
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => this.triggerCalculation());
   }
 
   ngOnDestroy(): void {
@@ -62,7 +63,7 @@ export class EasterPartTimeDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private calculate(): void {
+  private triggerCalculation(): void {
     const vals = this.form.value;
     const amount = parseFloat(vals.amount) || 0;
     const daysWorked = parseInt(vals.daysWorked) || 0;
@@ -70,23 +71,18 @@ export class EasterPartTimeDialogComponent implements OnInit, OnDestroy {
 
     if (amount <= 0 || daysWorked <= 0) { this.results = null; return; }
 
-    // 1. Calculate base daily wage
-    const dailyWage = isSalary ? (amount / 25) : amount;
+    const dailyWage = isSalary ? amount / 25 : amount;
 
-    // 2. Legal Ratio for part-time: 1 daily wage for every 8 days WORKED
-    const bonusDaysRatio = daysWorked / 8;
-    const baseBonus = bonusDaysRatio * dailyWage;
-
-    // 3. Holiday Bonus Increment (0.04166)
-    const increment = baseBonus * 0.04166;
-    const finalBonus = baseBonus + increment;
-
-    this.results = {
-      dailyWage,
-      bonusDaysRatio: bonusDaysRatio.toFixed(2),
-      baseBonus,
-      increment,
-      finalBonus,
-    };
+    this.calc.easterPartTime({ dailyWage, workedDays: daysWorked })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(r => {
+        this.results = {
+          dailyWage,
+          bonusDaysRatio: r.units.toFixed(2),
+          baseBonus: r.base,
+          increment: r.amount - r.base,
+          finalBonus: r.amount,
+        };
+      });
   }
 }

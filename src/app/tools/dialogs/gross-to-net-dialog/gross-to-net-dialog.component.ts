@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { CurrencyPipe } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalculatorService, GrossToNetResult } from '../../../services/calculator.service';
 
 interface CalcResults {
   monthlyGross: number;
@@ -54,22 +55,27 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private calc: CalculatorService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
       calculationMode: ['grossToNet'],
       salaryInput: [880, Validators.required],
       children: [0, Validators.required],
+      age: [40],
       use14months: [true],
       hasDisability: [false],
     });
 
-    this.calculate();
+    // Trigger initial calculation
+    this.triggerCalculation();
 
     this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.calculate());
+      .pipe(
+        debounceTime(300),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => this.triggerCalculation());
   }
 
   ngOnDestroy(): void {
@@ -81,11 +87,13 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
     return this.form?.value.calculationMode === 'grossToNet';
   }
 
-  private calculate(): void {
+  private triggerCalculation(): void {
     const vals = this.form.value;
-    const mode = vals.calculationMode;
     const amount = parseFloat(vals.salaryInput) || 0;
-    const kids = parseInt(vals.children) || 0;
+    const children = parseInt(vals.children) || 0;
+    const months = vals.use14months ? 14 : 12;
+    const disability: boolean = !!vals.hasDisability;
+    const age = parseInt(vals.age) || 40;
 
     if (amount <= 0) {
       this.results = {
@@ -99,73 +107,47 @@ export class GrossToNetDialogComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (mode === 'grossToNet') {
-      this.results = this.calculateFromGross(amount, kids, vals.use14months, vals.hasDisability);
+    if (vals.calculationMode === 'grossToNet') {
+      this.calc.grossToNet({ gross: amount, children, months, disability, age })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(r => this.mapGrossToNetResult(amount, r));
     } else {
-      this.results = this.findGrossFromNet(amount, kids, vals.use14months, vals.hasDisability);
+      // net-to-gross: first resolve the gross, then get the full breakdown
+      this.calc.netToGross({ net: amount, children, months, disability, age })
+        .pipe(
+          switchMap(grossResult =>
+            this.calc.grossToNet({ gross: grossResult.gross, children, months, disability, age })
+              .pipe(
+                // carry grossResult along for monthlyGross
+                takeUntil(this.destroy$),
+              )
+          ),
+          takeUntil(this.destroy$),
+        )
+        .subscribe(r => {
+          // grossToNet response gives us net back; we need gross from it indirectly.
+          // Derive gross: netMonthly + efkaEmployee + incomeTaxMonthly
+          const derivedGross = r.netMonthly + r.efkaEmployee + r.incomeTaxMonthly;
+          this.results = {
+            monthlyGross: derivedGross,
+            monthlyNet: r.netMonthly,
+            efkaEmployee: r.efkaEmployee,
+            monthlyTax: r.incomeTaxMonthly,
+            efkaEmployer: r.efkaEmployer,
+            totalEmployerCost: r.employerCost,
+          };
+        });
     }
   }
 
-  private calculateFromGross(monthlyGross: number, children: number, use14months: boolean, hasDisability: boolean): CalcResults {
-    const salaryMult = use14months ? 14 : 12;
-    const EFKA_EMPLOYEE_RATE = 0.1337;
-    const EFKA_EMPLOYER_RATE = 0.2229;
-
-    const monthlyEfkaEmployee = monthlyGross * EFKA_EMPLOYEE_RATE;
-    const annualGross = monthlyGross * salaryMult;
-    const annualEfka = monthlyEfkaEmployee * salaryMult;
-    const taxableIncome = Math.max(0, annualGross - annualEfka);
-
-    let bracketTax = 0;
-    let prev = 0;
-    for (const b of [
-      { l: 10000, r: 0.09 },
-      { l: 20000, r: 0.22 },
-      { l: 30000, r: 0.28 },
-      { l: 40000, r: 0.36 },
-      { l: Infinity, r: 0.44 },
-    ]) {
-      if (taxableIncome <= prev) break;
-      bracketTax += (Math.min(taxableIncome, b.l) - prev) * b.r;
-      prev = b.l;
-    }
-
-    const bases = [777, 900, 1120, 1340]; // 2024 values
-    const base = children >= 3 ? bases[3] : (bases[children] ?? bases[0]);
-    const reduction = Math.max(0, (annualGross - 12000) * 0.005);
-    const disabilityBonus = hasDisability ? 200 : 0;
-    const credit = Math.max(0, base - reduction) + disabilityBonus;
-    const annualTax = Math.max(0, bracketTax - credit);
-    const monthlyTax = annualTax / salaryMult;
-    const net = monthlyGross - monthlyEfkaEmployee - monthlyTax;
-    const efkaEr = monthlyGross * EFKA_EMPLOYER_RATE;
-
-    return {
-      monthlyGross,
-      monthlyNet: net,
-      efkaEmployee: monthlyEfkaEmployee,
-      monthlyTax,
-      efkaEmployer: efkaEr,
-      totalEmployerCost: monthlyGross + efkaEr,
+  private mapGrossToNetResult(gross: number, r: GrossToNetResult): void {
+    this.results = {
+      monthlyGross: gross,
+      monthlyNet: r.netMonthly,
+      efkaEmployee: r.efkaEmployee,
+      monthlyTax: r.incomeTaxMonthly,
+      efkaEmployer: r.efkaEmployer,
+      totalEmployerCost: r.employerCost,
     };
-  }
-
-  private findGrossFromNet(targetNet: number, children: number, use14months: boolean, hasDisability: boolean): CalcResults {
-    let low = targetNet;
-    let high = targetNet * 3;
-    let bestGross = targetNet;
-
-    for (let i = 0; i < 60; i++) {
-      const mid = (low + high) / 2;
-      const res = this.calculateFromGross(mid, children, use14months, hasDisability);
-      if (res.monthlyNet > targetNet) {
-        high = mid;
-      } else {
-        low = mid;
-      }
-      bestGross = mid;
-    }
-
-    return this.calculateFromGross(bestGross, children, use14months, hasDisability);
   }
 }

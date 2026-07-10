@@ -6,6 +6,7 @@ import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { LayoutService } from '../../services/layout.service';
 import { WikiService } from '../../services/wiki.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-wiki-article',
@@ -34,9 +35,11 @@ export class WikiArticleComponent implements OnInit {
         switchMap(params => {
           const folder = params.get('folder');
           const file = params.get('file');
-          const path = `/assets/wiki/${folder}/${file}`;
+          // Root files use folder '.'; the backend serves them without a category segment.
+          const rel = folder && folder !== '.' ? `${folder}/${file}` : `${file}`;
+          const url = `${environment.apiBaseUrl}/api/wiki/article/${rel}`;
 
-          return this.http.get(path, { responseType: 'text' }).pipe(
+          return this.http.get(url, { responseType: 'text' }).pipe(
             catchError(() => of('# Σφάλμα\nΔεν ήταν δυνατή η φόρτωση του άρθρου.'))
           );
         })

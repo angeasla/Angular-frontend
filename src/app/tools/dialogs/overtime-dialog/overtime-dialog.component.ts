@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,11 +11,18 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalculatorService } from '../../../services/calculator.service';
+
+// NOTE: The backend computes the legal hourly rate as salary × 0.006 (ωρομίσθιο), which does NOT depend
+// on the contractual hoursPerWeek. The hoursPerWeek form field is therefore not forwarded to the API.
+// It remains in the form (and template) for display continuity but is unused by the calculation.
+// Flag for future UX cleanup: consider hiding/removing hoursPerWeek or adding an explanatory hint.
 
 interface OvertimeResults {
   hourlyRate: number;
   overworkRate: number;
   legalOvertime: number;
+  legalOvertimeOver150: number;
   illegalOvertime: number;
   nightShiftIncrement: number;
   totalNightRate: number;
@@ -48,7 +55,7 @@ export class OvertimeDialogComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private calc: CalculatorService) {
     this.form = this.fb.group({
       employeeType: ['salary', Validators.required],
       grossAmount: [1200, [Validators.required, Validators.min(1)]],
@@ -59,7 +66,7 @@ export class OvertimeDialogComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.calculate();
+    this.triggerCalculation();
 
     // Toggle legalBaseAmount field based on checkbox
     this.form.get('isBasicSalary')?.valueChanges
@@ -83,8 +90,8 @@ export class OvertimeDialogComponent implements OnInit, OnDestroy {
       });
 
     this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.calculate());
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => this.triggerCalculation());
   }
 
   ngOnDestroy(): void {
@@ -92,47 +99,39 @@ export class OvertimeDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private calculate(): void {
-    const vals = this.form.getRawValue(); // Use getRawValue to include disabled fields
-    const amount = parseFloat(vals.grossAmount) || 0;
-    const legalAmount = parseFloat(vals.legalBaseAmount) || amount;
-    const hours = parseFloat(vals.hoursPerWeek) || 40;
+  private triggerCalculation(): void {
+    const vals = this.form.getRawValue();
+    const grossAmount = parseFloat(vals.grossAmount) || 0;
+    const legalBaseAmount = parseFloat(vals.legalBaseAmount) || grossAmount;
     const isSalary = vals.employeeType === 'salary';
 
-    if (amount <= 0 || hours <= 0) { this.results = null; return; }
+    if (grossAmount <= 0) { this.results = null; return; }
 
-    // 1. Daily Wage Calculation
-    const dailyWage = isSalary ? amount / 25 : amount;
-    const legalDailyWage = isSalary ? legalAmount / 25 : legalAmount;
+    // For daily-wage employees convert to a monthly equivalent (×22) before calling the API
+    const monthlySalary = isSalary ? grossAmount : grossAmount * 22;
+    const legalMonthlySalary = vals.isBasicSalary
+      ? monthlySalary
+      : (isSalary ? legalBaseAmount : legalBaseAmount * 22);
 
-    // 2. Hourly Rate Calculation (Law: Daily * (6 / hours))
-    const hourlyRate = dailyWage * (6 / hours);
-    const legalHourlyRate = legalDailyWage * (6 / hours);
-
-    // 3. Overwork - +20% on actual hourly rate
-    const overworkRate = hourlyRate * 1.20;
-
-    // 4. Overtime
-    const legalOvertime = hourlyRate * 1.40;    // +40%
-    const illegalOvertime = hourlyRate * 2.20;  // +120%
-
-    // 5. Night Shift - +25% on LEGAL hourly rate
-    const nightShiftIncrement = legalHourlyRate * 0.25;
-    const totalNightRate = hourlyRate + nightShiftIncrement;
-
-    // 6. 6th Day of week (Saturday)
-    const sixthDayStandard = dailyWage * 1.30; // 30% increment for 5-day workers
-    const sixthDayShift = dailyWage * 1.40;    // 40% increment for continuous shift businesses
-
-    this.results = {
-      hourlyRate,
-      overworkRate,
-      legalOvertime,
-      illegalOvertime,
-      nightShiftIncrement,
-      totalNightRate,
-      sixthDayStandard,
-      sixthDayShift,
-    };
+    this.calc.overtimeRates({
+      monthlySalary,
+      hourlyWage: 0,
+      legalMonthlySalary,
+      sixDay: false,
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(r => {
+        this.results = {
+          hourlyRate: r.hourlyRate,
+          overworkRate: r.overwork,
+          legalOvertime: r.legalOvertime,
+          legalOvertimeOver150: r.legalOvertimeOver150,
+          illegalOvertime: r.illegalOvertime,
+          nightShiftIncrement: r.nightIncrement,
+          totalNightRate: r.totalNightRate,
+          sixthDayStandard: r.sixthDayStandard,
+          sixthDayShift: r.sixthDayShift,
+        };
+      });
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface WikiArticle {
   title: string;
@@ -36,7 +37,7 @@ export class WikiService {
     if (this.loaded) return;
     this.loaded = true;
 
-    this.http.get<WikiIndex>('/assets/wiki-index.json').subscribe({
+    this.http.get<WikiIndex>(`${environment.apiBaseUrl}/api/wiki/index`).subscribe({
       next: (data) => {
         this.categoriesSubject.next(data.categories);
         this.linkMap = data.linkMap;

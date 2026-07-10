@@ -55,6 +55,10 @@
           <span>{{ results.legalOvertime | currency:'EUR':'symbol':'1.2-2' }}</span>
         </div>
         <div class="breakdown-row">
+          <span>{{ 'TOOLS.OVERTIME_DIALOG.LEGAL_OVERTIME_OVER150' | translate }}</span>
+          <span>{{ results.legalOvertimeOver150 | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="breakdown-row">
           <span>{{ 'TOOLS.OVERTIME_DIALOG.ILLEGAL_OVERTIME' | translate }}</span>
           <span>{{ results.illegalOvertime | currency:'EUR':'symbol':'1.2-2' }}</span>
         </div>
@@ -72,11 +76,11 @@
         <h3 class="breakdown-subheader mt-3">{{ 'TOOLS.OVERTIME_DIALOG.SECTION_6TH_DAY' | translate }}</h3>
         <div class="breakdown-row">
           <span>{{ 'TOOLS.OVERTIME_DIALOG.6TH_DAY_STANDARD' | translate }}</span>
-          <span>{{ results.sixthDayStandard | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_DAY' | translate }}</span>
+          <span>{{ results.sixthDayStandard | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_HOUR' | translate }}</span>
         </div>
         <div class="breakdown-row">
           <span>{{ 'TOOLS.OVERTIME_DIALOG.6TH_DAY_SHIFT' | translate }}</span>
-          <span>{{ results.sixthDayShift | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_DAY' | translate }}</span>
+          <span>{{ results.sixthDayShift | currency:'EUR':'symbol':'1.2-2' }} {{ 'GENERAL.PER_HOUR' | translate }}</span>
         </div>
       </div>
     </div>

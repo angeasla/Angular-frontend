@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, Injectable } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -11,6 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { NativeDateAdapter, DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { CalculatorService } from '../../../services/calculator.service';
+import { wholeMonthsBetween } from '../../../services/date-utils';
 
 @Injectable()
 class CustomDateAdapter extends NativeDateAdapter {
@@ -80,7 +82,7 @@ export class LeaveDaysDialogComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private calc: CalculatorService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -89,11 +91,11 @@ export class LeaveDaysDialogComponent implements OnInit, OnDestroy {
       totalYears: [0, [Validators.required, Validators.min(0)]],
     });
 
-    this.calculate();
+    this.triggerCalculation();
 
     this.form.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.calculate());
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => this.triggerCalculation());
   }
 
   ngOnDestroy(): void {
@@ -101,63 +103,41 @@ export class LeaveDaysDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private monthsBetween(hireDate: Date, refDate: Date) {
-    let years = refDate.getFullYear() - hireDate.getFullYear();
-    let months = refDate.getMonth() - hireDate.getMonth();
-    if (refDate.getDate() < hireDate.getDate()) months -= 1;
-    if (months < 0) { years -= 1; months += 12; }
-    return { years, months, totalMonths: years * 12 + months };
+  private tenureLabel(tenureMonths: number): string {
+    const years = Math.floor(tenureMonths / 12);
+    const months = tenureMonths % 12;
+    const parts: string[] = [];
+    if (years === 1) parts.push('1 χρόνος');
+    else if (years > 1) parts.push(`${years} χρόνια`);
+    if (months === 1) parts.push('1 μήνας');
+    else if (months > 1) parts.push(`${months} μήνες`);
+    return parts.length === 0 ? 'λιγότερο από 1 μήνας' : parts.join(' και ');
   }
 
-  private calculate(): void {
+  private triggerCalculation(): void {
     const vals = this.form.value;
     if (!vals.hireDate) { this.results = null; return; }
 
     const hire = new Date(vals.hireDate);
     const now = new Date(new Date().toISOString().slice(0, 10));
-    const is6day = parseInt(vals.workweek) === 6;
-    const totYears = parseInt(vals.totalYears) || 0;
 
     if (hire > now) {
       this.results = { days: 0, detail: 'Η ημερομηνία πρόσληψης είναι στο μέλλον.', tenureDisplay: '' };
       return;
     }
 
-    const { years: empYears, months: empMons, totalMonths: empMonths } = this.monthsBetween(hire, now);
+    const tenureMonths = wholeMonthsBetween(hire, now);
+    const workWeek = parseInt(vals.workweek) || 5;
+    const totalCareerYears = parseInt(vals.totalYears) || 0;
 
-    let days = 0;
-    let detail = '';
-
-    const isMaxScale = (empMonths >= 120 || totYears >= 12);
-
-    let entitlement = 0;
-    if (isMaxScale) {
-      entitlement = is6day ? 30 : 25;
-    } else if (empMonths >= 24) {
-      entitlement = is6day ? 26 : 22;
-    } else if (empMonths >= 12) {
-      entitlement = is6day ? 25 : 21;
-    } else {
-      entitlement = is6day ? 24 : 20;
-    }
-
-    if (empMonths < 12) {
-      days = Math.max(0, Math.round((empMonths / 12) * entitlement));
-      detail = `Αναλογικά για ${empMonths} μήνα/ες απασχόλησης. Βάση ${entitlement} ημέρες/έτος.`;
-    } else {
-      days = entitlement;
-      detail = isMaxScale
-        ? 'Ανώτατη κλίμακα λόγω συνολικής προϋπηρεσίας.'
-        : `${empYears} έτος/έτη στον ίδιο εργοδότη.`;
-    }
-
-    const tenureParts: string[] = [];
-    if (empYears === 1) tenureParts.push('1 χρόνος');
-    else if (empYears > 1) tenureParts.push(`${empYears} χρόνια`);
-    if (empMons === 1) tenureParts.push('1 μήνας');
-    else if (empMons > 1) tenureParts.push(`${empMons} μήνες`);
-    const tenureDisplay = tenureParts.length === 0 ? 'λιγότερο από 1 μήνας' : tenureParts.join(' και ');
-
-    this.results = { days, detail, tenureDisplay };
+    this.calc.leaveDays({ workWeek, tenureMonths, totalCareerYears })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(r => {
+        this.results = {
+          days: r.days,
+          detail: `Βάσει ${tenureMonths} μήνων απασχόλησης.`,
+          tenureDisplay: this.tenureLabel(tenureMonths),
+        };
+      });
   }
 }

@@ -10,6 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 
+// TODO(KEPEA): reconcile part-time leave input model with backend (ratio) after KEPEA calibration.
+// The backend endpoint uses a ptRatio (partTime/fullTime hours ratio) which this dialog does not
+// collect. Migration is intentionally deferred; calculation stays client-side until the input
+// model is aligned.
+
 interface LeavePartTimeResults {
   baseLeave: number;
   daysWorked: number;
