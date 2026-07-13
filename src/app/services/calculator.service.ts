@@ -25,18 +25,16 @@ export interface MaternityResult { workingDays: number; hoursOwed: number; conti
 export interface NationalPensionResult { monthlyAmount: number; reduced: boolean; }
 export interface ContributoryPensionResult { monthlyAmount: number; replacementRatePct: number; }
 export interface UnemploymentResult {
-  monthlyBenefit: number; durationMonths: number; avgDailyWage: number; dailyBenefit: number;
-  uncappedMonthly: number; totalPayout: number; eligible: boolean; boundApplied: BoundApplied;
+  monthlyBenefit: number; dailyBenefit: number; durationMonths: number;
+  totalPayout: number; tierPercent: number; dependents: number; eligible: boolean;
 }
 export interface RetirementSeveranceResult {
-  amount: number; multiplierMonths: number; monthlySalary: number; totalMonths: number;
-  years: number; months: number; retirementFactor: number; regime: RetirementRegime;
+  amount: number; factor: number; dismissalSeveranceBase: number; compensationMonths: number;
+  calcSalary: number; years: number; supplementaryInsured: boolean;
 }
 
 export type PayType = 'SALARY' | 'DAILY_WAGE';
 export type OvertimeType = 'OVERWORK' | 'LEGAL' | 'ILLEGAL';
-export type BoundApplied = 'FLOOR' | 'CAP' | 'SALARY';
-export type RetirementRegime = 'OLD' | 'NEW';
 
 /**
  * Calls the backend calculator REST API (/api/calc/*). This is the single source of truth for all
@@ -97,7 +95,7 @@ export class CalculatorService {
   xmasHourly(b: { totalEarnings: number; actualDaysWorked: number; calendarDays: number }) {
     return this.post<BonusResult>('xmas-hourly', b);
   }
-  maternity(b: { windowStart: string; workWeek: number; annualLeaveDays: number; multipleBirthExtraChildren: number }) {
+  maternity(b: { windowStart: string; workWeek: number; annualLeaveDays: number }) {
     return this.post<MaternityResult>('maternity', b);
   }
   nationalPension(b: { insuranceYears: number; residenceYears: number; retirementAge: number }) {
@@ -106,10 +104,10 @@ export class CalculatorService {
   contributoryPension(b: { pensionableEarnings: number; insuranceYears: number }) {
     return this.post<ContributoryPensionResult>('contributory-pension', b);
   }
-  unemployment(b: { avgMonthlySalary: number; insuredDays: number }) {
+  unemployment(b: { avgMonthlySalary: number; insuredDays: number; dependents: number }) {
     return this.post<UnemploymentResult>('unemployment', b);
   }
-  retirementSeverance(b: { monthlySalary: number; hireDate: string; regime: RetirementRegime }) {
+  retirementSeverance(b: { monthlySalary: number; completedYears: number; supplementaryInsured: boolean }) {
     return this.post<RetirementSeveranceResult>('retirement-severance', b);
   }
 }

@@ -38,6 +38,7 @@ export class UnemploymentDialogComponent implements OnInit, OnDestroy {
     this.form = this.fb.group({
       avgMonthlySalary: [830, [Validators.required, Validators.min(1)]],
       insuredDays: [200, [Validators.required, Validators.min(0)]],
+      dependents: [0, [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -54,23 +55,15 @@ export class UnemploymentDialogComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /** Maps the backend boundApplied enum to the matching i18n label key. */
-  boundLabelKey(): string {
-    switch (this.results?.boundApplied) {
-      case 'FLOOR': return 'TOOLS.UNEMPLOYMENT_DIALOG.BOUND_FLOOR';
-      case 'CAP': return 'TOOLS.UNEMPLOYMENT_DIALOG.BOUND_CAP';
-      default: return 'TOOLS.UNEMPLOYMENT_DIALOG.BOUND_SALARY';
-    }
-  }
-
   private triggerCalculation(): void {
     const vals = this.form.value;
     const avgMonthlySalary = parseFloat(vals.avgMonthlySalary) || 0;
     const insuredDays = parseInt(vals.insuredDays) || 0;
+    const dependents = parseInt(vals.dependents) || 0;
 
     if (avgMonthlySalary <= 0) { this.results = null; return; }
 
-    this.calc.unemployment({ avgMonthlySalary, insuredDays })
+    this.calc.unemployment({ avgMonthlySalary, insuredDays, dependents })
       .pipe(takeUntil(this.destroy$))
       .subscribe(r => {
         this.results = r;

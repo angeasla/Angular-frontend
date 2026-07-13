@@ -3,24 +3,20 @@
 <mat-dialog-content>
   <form [formGroup]="form" class="tool-form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.HIRE_DATE_LABEL' | translate }}</mat-label>
-      <input matInput [matDatepicker]="hirePicker" formControlName="hireDate">
-      <mat-datepicker-toggle matSuffix [for]="hirePicker"></mat-datepicker-toggle>
-      <mat-datepicker #hirePicker></mat-datepicker>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_LABEL' | translate }}</mat-label>
-      <mat-select formControlName="regime">
-        <mat-option value="NEW">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_NEW' | translate }}</mat-option>
-        <mat-option value="OLD">{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.REGIME_OLD' | translate }}</mat-option>
-      </mat-select>
+      <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.YEARS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="completedYears" min="0">
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.SALARY_LABEL' | translate }}</mat-label>
       <input matInput type="number" formControlName="monthlySalary" min="1">
     </mat-form-field>
+
+    <div class="checkbox-group">
+      <mat-checkbox formControlName="supplementaryInsured" color="primary">
+        {{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.SUPPLEMENTARY_LABEL' | translate }}
+      </mat-checkbox>
+    </div>
   </form>
 
   @if (results) {
@@ -33,16 +29,16 @@
       <div class="breakdown">
         <div class="breakdown-row">
           <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.TENURE' | translate }}</span>
-          <span>{{ results.years }} χρόνια {{ results.months }} μήνες</span>
+          <span>{{ results.years }} έτη</span>
         </div>
         <div class="breakdown-row">
-          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.TIER' | translate }}</span>
-          <span>{{ results.multiplierMonths }} × μισθός</span>
+          <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.DISMISSAL_BASE' | translate }}</span>
+          <span>{{ results.dismissalSeveranceBase | currency:'EUR':'symbol':'1.2-2' }}</span>
         </div>
         <div class="breakdown-row border-bottom">
           <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR' | translate }}</span>
-          @if (results.retirementFactor === 1) {
-            <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR_100' | translate }}</span>
+          @if (results.supplementaryInsured) {
+            <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR_40' | translate }}</span>
           } @else {
             <span>{{ 'TOOLS.RETIREMENT_SEVERANCE_DIALOG.FACTOR_50' | translate }}</span>
           }

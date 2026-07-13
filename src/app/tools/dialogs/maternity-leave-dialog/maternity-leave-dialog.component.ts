@@ -83,7 +83,6 @@ export class MaternityLeaveDialogComponent implements OnInit, OnDestroy {
       windowStart: toISODate(start),
       workWeek,
       annualLeaveDays,
-      multipleBirthExtraChildren: 0,
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe(r => {
