@@ -11,6 +11,12 @@
       <mat-label>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.INSURED_DAYS_LABEL' | translate }}</mat-label>
       <input matInput type="number" formControlName="insuredDays" min="0">
     </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DEPENDENTS_LABEL' | translate }}</mat-label>
+      <input matInput type="number" formControlName="dependents" min="0">
+      <mat-hint>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DEPENDENTS_HINT' | translate }}</mat-hint>
+    </mat-form-field>
   </form>
 
   @if (results) {
@@ -22,25 +28,17 @@
 
       @if (results.eligible) {
         <div class="breakdown">
-          <div class="breakdown-row border-bottom">
-            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DURATION_SUFFIX' | translate }}</span>
-            <span>{{ results.durationMonths }} {{ 'GENERAL.MONTHS' | translate }}</span>
-          </div>
           <div class="breakdown-row">
-            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.AVG_DAILY' | translate }}</span>
-            <span>{{ results.avgDailyWage | currency:'EUR':'symbol':'1.2-2' }}</span>
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.TIER_PERCENT' | translate }}</span>
+            <span>{{ results.tierPercent }}%</span>
           </div>
           <div class="breakdown-row">
             <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DAILY_BENEFIT' | translate }}</span>
             <span>{{ results.dailyBenefit | currency:'EUR':'symbol':'1.2-2' }}</span>
           </div>
           <div class="breakdown-row">
-            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.MONTHLY_UNCAPPED' | translate }}</span>
-            <span>{{ results.uncappedMonthly | currency:'EUR':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="breakdown-row">
-            <span>{{ boundLabelKey() | translate }}</span>
-            <span>{{ results.monthlyBenefit | currency:'EUR':'symbol':'1.2-2' }}</span>
+            <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.DURATION_SUFFIX' | translate }}</span>
+            <span>{{ results.durationMonths }} {{ 'GENERAL.MONTHS' | translate }}</span>
           </div>
           <div class="breakdown-row border-bottom">
             <span>{{ 'TOOLS.UNEMPLOYMENT_DIALOG.TOTAL_PAYOUT' | translate }}</span>
